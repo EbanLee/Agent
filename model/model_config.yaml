@@ -1,0 +1,3 @@
+chat_model_name: "Xiaojian9992024/Qwen2.5-Dyanka-7B-Preview"  # "ibm-granite/granite-3.1-2b-instruct", "ehristoforu/coolqwen-3b-it", "Xiaojian9992024/Qwen2.5-Dyanka-7B-Preview"
+Orchestration_model_name: "nvidia/Orchestrator-8B"
+reasoning_model_name: "ehristoforu/coolqwen-3b-it"
