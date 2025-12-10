@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from ddgs import DDGS
 
 from tools import Tool
@@ -6,6 +8,7 @@ class WebSearchTool(Tool):
     name = "web_search"
     description = (
         "- Use this tool to search the web."
+        f"- Current time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
         "- Parameters:"
         "  - \"query\": the search query string"
         )

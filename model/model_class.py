@@ -9,7 +9,6 @@ from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 from utils import file_utils
 from utils.functions import *
 import tools
-from tools import search_tool, git_tool
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 print(f"{DEVICE=}", "\n")
@@ -94,7 +93,7 @@ class ChatBot(LLM):
             tokenize=False,
             add_generation_prompt=True,
         )
-        print(f"\n--------------------------------------------------------------\n{text}\n--------------------------------------------------------------\n")
+        print(f"\n------------------------ 최종 입력 ------------------------\n\n{text}\n\n--------------------------------------------------------------\n")
 
         inputs = self.tokenizer(text, return_tensors='pt')
         # print(inputs)
@@ -197,7 +196,7 @@ class Reasoner(LLM):
             max_repeat_num: tool을 최대 몇번까지 사용할지
 
         returns:
-            list: tool사용해서 나온 결과들
+            str: tool사용해서 나온 결과
         """
         result = []
         messages = history[1:] if history and history[0]['role']=='system' else history[:]
@@ -221,7 +220,7 @@ class Reasoner(LLM):
                 eos_token_id=self.tokenizer.eos_token_id,
                 pad_token_id=self.tokenizer.eos_token_id,
                 max_new_tokens=256,
-                temperature=0.3
+                temperature=0.2
             )
             generated_output = outputs[0][len(inputs.input_ids[0]):].tolist()
             try:
@@ -281,14 +280,14 @@ class Agent:
 
     def run(self, user_input: str):
         reasoner_result_str = self.reasoner.generate(user_input, self.history)
-        print("\n ----------------------------------- reasoner 판단 과정 & 결과 ----------------------------------- \n" ,reasoner_result_str, "\n")
+        print("\n ----------------------------------- reasoner 사용 결과 ----------------------------------- \n\n" ,reasoner_result_str, "\n\n ----------------------------------- reasoner 사용 결과 ----------------------------------- \n")
         final_user_input = (
             f"[USER QUESTION]\n{user_input}\n\n"
             f"[TOOL RESULTS]\n{reasoner_result_str}\n\n"
             f"Please provide the final answer to the user's question based on the information above."
         )
 
-        print(f"\n{final_user_input}\n")
+        # print(f"\n최종 입력:\n{final_user_input}\n")
 
         result_output = self.chat_bot.generate(final_user_input, self.history)
         
