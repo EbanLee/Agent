@@ -152,13 +152,15 @@ class Reasoner(LLM):
         - The JSON must always have this structure:
 
         {{
-            "thought": "Explain what you need to do and why. (1–3 sentences)",
+            "thought": "In 1–3 sentences in the user's language, describe which tool you will call next (or 'finish') and why. Do NOT include the final answer or any detailed factual claims.",
             "action": "one of the tool names above, or 'finish'",
             "action_input": {{ the parameters to pass to the tool (dict) }}
         }}
 
         Rules:
-        1. Use tools only when information cannot be answered by reasoning alone; otherwise prefer "finish".
+        1. Use tools only when the user’s request requires information, actions, or operations that cannot be completed through reasoning alone.
+          - If a part of the request can be answered or handled directly (including using information from recent conversation), do NOT call a tool for that part.
+          - Use tools only for the specific parts of the request that actually require them.
         2. Only one tool call per step.
           - If you need to call multiple tools, call them one by one in separate steps.
           - After each tool call, wait for the OBSERVATION before deciding the next step.
@@ -168,11 +170,13 @@ class Reasoner(LLM):
         4. Task decomposition:
           - If the user's request or instruction contains multiple entities, items, or subtasks, you MUST break the work into smaller steps.
           - Even if the user does NOT explicitly request separation, decompose the task whenever multiple reasoning or tool-usage steps are logically required.
+          - When the request asks about multiple entities, call tools separately for each main entity (e.g., handle A first, then B, not "A and B" in one query).
           - Follow this pattern: Step A → observe → Step B → observe → ... → finish.
         5. When using the web_search tool (or any search-based tool):
           - Keep the query short, keyword-based, and focused.
+          - Do not combine multiple main entities in a single query; search for each entity separately (e.g., "A", then "B").
           - If the OBSERVATION does not contain the important information you need, refine the query and search again.
-          - For time-sensitive or externally changing information (e.g., real-world facts, current status, numbers, events), prefer using a search tool instead of relying on prior knowledge.
+          - For time-sensitive or externally changing information (e.g., real-world facts, current status, events), prefer using a search tool instead of relying on prior knowledge.
         6. Use the same language as the user's request. Use English only when needed (e.g., technical terms, English search keywords).
         7. The "action_input" must ALWAYS be a JSON object (dictionary), even if it is empty.
           Example: {{ "query": "A's current stock price" }} or {{}}.
@@ -200,7 +204,7 @@ class Reasoner(LLM):
         messages = [{'role': 'system', 'content': self.system_prompt}] + messages[max(0, len(messages)-(self.remember_turn*2)):] + [{'role': "user", 'content': user_input}]
         observation: Optional[str] = None
 
-        for i in range(max_repeat_num):
+        for _ in range(max_repeat_num):
             if observation is not None:
                 messages.append({'role': 'user', 'content': f"OBSERVATION: \n{observation}"})
 
@@ -217,7 +221,7 @@ class Reasoner(LLM):
                 eos_token_id=self.tokenizer.eos_token_id,
                 pad_token_id=self.tokenizer.eos_token_id,
                 max_new_tokens=256,
-                temperature=0.4
+                temperature=0.3
             )
             generated_output = outputs[0][len(inputs.input_ids[0]):].tolist()
             try:
@@ -244,24 +248,26 @@ class Reasoner(LLM):
 
             action_input: dict[str, str] = output_dict.get("action_input")
             thought = output_dict.get("thought")
+
+            # 도구 사용 성공했을 때 만 result에 저장.
             try:
                 tool: tools.Tool = self.tools[action]
                 observation = tool(**action_input)
+                result.append(f"thought={thought} \naction={action} \nOBSERVATION: \n{observation}\n")
             except TypeError as e:
                 observation = f"\naction={action} \naction_input={action_input} \nOBSERVATION: \n[tool call error] {e}\n\n Please answer again."
             except Exception as e:
                 observation = f"\naction={action} \naction_input={action_input} \nOBSERVATION: \n[tool call error] {e}\n\n Please answer again."
             
-            result.append(f"[Step {i}]: \nthought={thought} \naction={action} \nOBSERVATION: \n{observation}\n")
-            print("OBSERVATION: \n", observation, "\n")
-            
+            print("Reasoner OBSERVATION: \n", observation, "\n")
+        print()
         
         if not result:
             return output_dict["thought"]
 
-        result = '\n'.join(result)
+        # result = '\n'.join(result)
 
-        return result
+        return result[-1]
 
 class Agent:
     def __init__(self, total_tools:dict={}, remember_turn:int=3):
@@ -275,7 +281,7 @@ class Agent:
 
     def run(self, user_input: str):
         reasoner_result_str = self.reasoner.generate(user_input, self.history)
-        print("\n ----------------------------------- reasoner 판단 과정 & 결과----------------------------------- \n" ,reasoner_result_str, "\n")
+        print("\n ----------------------------------- reasoner 판단 과정 & 결과 ----------------------------------- \n" ,reasoner_result_str, "\n")
         final_user_input = (
             f"[USER QUESTION]\n{user_input}\n\n"
             f"[TOOL RESULTS]\n{reasoner_result_str}\n\n"
