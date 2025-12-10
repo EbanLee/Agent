@@ -2,6 +2,7 @@ import os
 import abc
 import textwrap
 from typing import Optional
+from datetime import datetime
 
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
@@ -148,6 +149,7 @@ class Reasoner(LLM):
         
         Output format:
         - You MUST output exactly ONE valid JSON object and NOTHING else.
+        - If you include anything outside the JSON object, the output is invalid.
         - The JSON must always have this structure:
 
         {{
@@ -169,8 +171,8 @@ class Reasoner(LLM):
         4. Task decomposition:
           - If the user's request or instruction contains multiple entities, items, or subtasks, you MUST break the work into smaller steps.
           - Even if the user does NOT explicitly request separation, decompose the task whenever multiple reasoning or tool-usage steps are logically required.
-          - When the request asks about multiple entities, call tools separately for each main entity (e.g., handle A first, then B, not "A and B" in one query).
-          - Follow this pattern: Step A → observe → Step B → observe → ... → finish.
+          - When the request asks about multiple entities, call tools separately for each main entity (e.g., handle 'A' first, then 'B', not "A and B" in one query).
+          - Follow this pattern: Step 'A' → observe about 'A'. → Step 'B' → observe about 'B' → ... → finish.
         5. When using the web_search tool (or any search-based tool):
           - Keep the query short, keyword-based, and focused.
           - Do not combine multiple main entities in a single query; search for each entity separately (e.g., "A", then "B").
@@ -200,7 +202,7 @@ class Reasoner(LLM):
         """
         result = []
         messages = history[1:] if history and history[0]['role']=='system' else history[:]
-        messages = [{'role': 'system', 'content': self.system_prompt}] + messages[max(0, len(messages)-(self.remember_turn*2)):] + [{'role': "user", 'content': user_input}]
+        messages = [{'role': 'system', 'content': self.system_prompt}] + messages[max(0, len(messages)-(self.remember_turn*2)):] + [{'role': "user", 'content': f"- Current time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n" + user_input}]
         observation: Optional[str] = None
 
         for _ in range(max_repeat_num):
@@ -236,7 +238,7 @@ class Reasoner(LLM):
             except json.JSONDecodeError:
                 # JSON형태가 아닐 때 다시요청
                 observation = None
-                messages+=[{'role': 'assistant', 'content': f"{output_context}"}, {'role': 'user', 'content': f"The response is not in valid JSON format. Please answer again."}]
+                messages+=[{'role': 'assistant', 'content': f"{output_context}"}, {'role': 'user', 'content': f"You MUST output exactly ONE valid JSON object and NOTHING else. Please answer again."}]
                 continue
             
             messages+=[{'role': "assistant", "content": output_context}]
