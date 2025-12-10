@@ -71,13 +71,10 @@ class ChatBot(LLM):
         You are the Final Answer Generator.
 
         Your job:
-        - Produce a natural-language answer for the user based on the provided information.
-        - Do NOT plan actions, call tools, or mention tools, system logic, or internal steps.
-        - Never reveal chain-of-thought, JSON, or internal reasoning.
-        - Respond in the user's language.
-        - If information is incomplete, answer carefully and avoid hallucinating.
-
-        Your only goal is to give the best final answer to the user.
+        - Provide a natural-language answer using ONLY the given information.
+        - Do NOT call tools, plan actions, or mention internal reasoning.
+        - Respond in the same language as the user's request.
+        - If information is insufficient, state that clearly rather than guessing.
         """
 
     def generate(self, user_input: str, history: list) -> str:
@@ -142,45 +139,39 @@ class Reasoner(LLM):
 
         {tool_str}
 
-        Your role:
-        - Look at the user's request (and optional chat history).
-        - Decide whether to call a tool to handle the request.
-        - Never write the final answer for the user.
-        
-        Output format:
-        - You MUST output exactly ONE valid JSON object and NOTHING else.
-        - If you include anything outside the JSON object, the output is invalid.
-        - The JSON must always have this structure:
+        Your output must be exactly ONE JSON object and nothing else:
 
-        {{
-            "thought": "In 1–3 sentences in the user's language, describe which tool you will call next (or 'finish') and why. Do NOT include the final answer or any detailed factual claims.",
-            "action": "one of the tool names above, or 'finish'",
-            "action_input": {{ the parameters to pass to the tool (dict) }}
-        }}
+        {
+        "thought": "1–3 sentences explaining your next step (tool or 'finish'). No final answers.",
+        "action": "tool name or 'finish'",
+        "action_input": { ... }
+        }
 
         Rules:
-        1. Use tools only when the user’s request requires information, actions, or operations that cannot be completed through reasoning alone.
-          - If a part of the request can be answered or handled directly (including using information from recent conversation), do NOT call a tool for that part.
-          - Use tools only for the specific parts of the request that actually require them.
-        2. Only one tool call per step.
-          - If you need to call multiple tools, call them one by one in separate steps.
-          - After each tool call, wait for the OBSERVATION before deciding the next step.
-        3. "finish" means:
-          - You already have enough information to let the final answer generator respond to the user.
-          - No additional tool calls are required.
+
+        1. Call tools only when NEW external information is required.
+        - Check recent conversation first. If an entity already has reliable information, do NOT call a tool for that entity.
+        - Evaluate each entity independently.
+
+        2. One tool call per step.
+        - After a tool call, wait for OBSERVATION and decide the next step.
+
+        3. "finish" means the final answer generator already has enough information.
+
         4. Task decomposition:
-          - If the user's request or instruction contains multiple entities, items, or subtasks, you MUST break the work into smaller steps.
-          - Even if the user does NOT explicitly request separation, decompose the task whenever multiple reasoning or tool-usage steps are logically required.
-          - When the request asks about multiple entities, call tools separately for each main entity (e.g., handle 'A' first, then 'B', not "A and B" in one query).
-          - Follow this pattern: Step 'A' → observe about 'A'. → Step 'B' → observe about 'B' → ... → finish.
-        5. When using the web_search tool (or any search-based tool):
-          - Keep the query short, keyword-based, and focused.
-          - Do not combine multiple main entities in a single query; search for each entity separately (e.g., "A", then "B").
-          - If the OBSERVATION does not contain the important information you need, refine the query and search again.
-          - For time-sensitive or externally changing information (e.g., real-world facts, current status, events), prefer using a search tool instead of relying on prior knowledge.
-        6. Use the same language as the user's request. Use English only when needed (e.g., technical terms, English search keywords).
-        7. The "action_input" must ALWAYS be a JSON object (dictionary), even if it is empty.
-          Example: {{ "query": "A's current stock price" }} or {{}}.
+        - Decompose only when the user explicitly asks about multiple entities or multiple attributes.
+        - Do NOT infer or expand subtasks. Only handle exactly what the user requested.
+        - Do NOT combine multiple entities into one search query.
+
+        5. Web search rules:
+        - Queries must be short, keyword-based, and focused.
+        - Refine and retry only if OBSERVATION lacks required information.
+
+        6. Language:
+        - "thought" should follow the user’s language when possible.
+        - English may be used if it improves clarity or search effectiveness.
+
+        7. "action_input" must ALWAYS be a JSON object (even if empty).
 
         Follow these rules strictly.
         """
@@ -202,7 +193,7 @@ class Reasoner(LLM):
         """
         result = []
         messages = history[1:] if history and history[0]['role']=='system' else history[:]
-        messages = [{'role': 'system', 'content': self.system_prompt}] + messages[max(0, len(messages)-(self.remember_turn*2)):] + [{'role': "user", 'content': f"- Current time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n" + user_input}]
+        messages = [{'role': 'system', 'content': self.system_prompt}] + messages[max(0, len(messages)-(self.remember_turn*2)):] + [{'role': "user", 'content': f"[Current time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}]\n\n" + user_input}]
         observation: Optional[str] = None
 
         for _ in range(max_repeat_num):
@@ -215,6 +206,8 @@ class Reasoner(LLM):
                 tokenize=False,
                 add_generation_prompt=True,
             )
+
+            print(f"\n------------------------ Reasoner 입력 ------------------------\n\n{text}\n\n--------------------------------------------------------------\n")
 
             inputs = self.tokenizer(text, return_tensors='pt')
             outputs = self.model.generate(
@@ -231,14 +224,14 @@ class Reasoner(LLM):
                 index = 0
 
             output_context = self.tokenizer.decode(generated_output[index:], skip_special_tokens=True)
-            print(f"\n-----------------------------------------\n에이전트 판단: \n{output_context}\n-----------------------------------------\n")
+            print(f"\n-----------------------------------------\nReasoner 판단: \n{output_context}\n-----------------------------------------\n")
 
             try:
                 output_dict = load_json(output_context)
             except json.JSONDecodeError:
                 # JSON형태가 아닐 때 다시요청
                 observation = None
-                messages+=[{'role': 'assistant', 'content': f"{output_context}"}, {'role': 'user', 'content': f"You MUST output exactly ONE valid JSON object and NOTHING else. Please answer again."}]
+                messages+=[{'role': 'assistant', 'content': f"{output_context}"}, {'role': 'user', 'content': f"Invalid format. Respond again with ONLY one JSON object, nothing else."}]
                 continue
             
             messages+=[{'role': "assistant", "content": output_context}]
@@ -284,7 +277,7 @@ class Agent:
         reasoner_result_str = self.reasoner.generate(user_input, self.history)
         print("\n ----------------------------------- reasoner 사용 결과 ----------------------------------- \n\n" ,reasoner_result_str, "\n\n ----------------------------------- reasoner 사용 결과 ----------------------------------- \n")
         final_user_input = (
-            f"[USER QUESTION]\n{user_input}\n\n"
+            f"[USER REQUEST]\n{user_input}\n\n"
             f"[TOOL RESULTS]\n{reasoner_result_str}\n\n"
             f"Please provide the final answer to the user's question based on the information above."
         )
