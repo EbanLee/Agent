@@ -3,6 +3,7 @@ import abc
 import textwrap
 from typing import Optional
 from datetime import datetime
+import time
 
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
@@ -73,8 +74,11 @@ class ChatBot(LLM):
         Your job:
         - Provide a natural-language answer using ONLY the given information.
         - Do NOT call tools, plan actions, or mention internal reasoning.
-        - Respond in the same language as the user's request.
         - If information is insufficient, state that clearly rather than guessing.
+
+        Language:
+        - Respond in the same language as the user's request.
+        - Use tool information, but ignore the tool result’s language when choosing your answer language.
         """
 
     def generate(self, user_input: str, history: list) -> str:
@@ -141,16 +145,17 @@ class Reasoner(LLM):
 
         Your output must be exactly ONE JSON object and nothing else:
 
-        {
-        "thought": "1–3 sentences explaining your next step (tool or 'finish'). No final answers.",
+        {{
+        "thought": "In about 1-3 sentence, state what part of the request is still unresolved (based on history) and why your next action is needed. No final answers."
         "action": "tool name or 'finish'",
-        "action_input": { ... }
-        }
+        "action_input": {{ ... }}
+        }}
 
         Rules:
 
-        1. Call tools only when NEW external information is required.
-        - Check recent conversation first. If an entity already has reliable information, do NOT call a tool for that entity.
+        1. Call tools only when needed.
+        - For information tools (e.g., web search): call ONLY if the needed information is NOT already in recent conversation. Do NOT re-search info already known.
+        - For action tools (e.g., git, file operations): ALWAYS perform the action when the user requests it, even if similar actions were done before.
         - Evaluate each entity independently.
 
         2. One tool call per step.
@@ -168,8 +173,9 @@ class Reasoner(LLM):
         - Refine and retry only if OBSERVATION lacks required information.
 
         6. Language:
-        - "thought" should follow the user’s language when possible.
+        - Prefer responding in the user's language.
         - English may be used if it improves clarity or search effectiveness.
+        - Do NOT use any other languages (such as Chinese or Japanese).
 
         7. "action_input" must ALWAYS be a JSON object (even if empty).
 
@@ -206,8 +212,6 @@ class Reasoner(LLM):
                 tokenize=False,
                 add_generation_prompt=True,
             )
-
-            print(f"\n------------------------ Reasoner 입력 ------------------------\n\n{text}\n\n--------------------------------------------------------------\n")
 
             inputs = self.tokenizer(text, return_tensors='pt')
             outputs = self.model.generate(
@@ -274,18 +278,23 @@ class Agent:
         self.history = []
 
     def run(self, user_input: str):
+        start_time = time.time()
         reasoner_result_str = self.reasoner.generate(user_input, self.history)
+        end_time = time.time()
         print("\n ----------------------------------- reasoner 사용 결과 ----------------------------------- \n\n" ,reasoner_result_str, "\n\n ----------------------------------- reasoner 사용 결과 ----------------------------------- \n")
         final_user_input = (
             f"[USER REQUEST]\n{user_input}\n\n"
             f"[TOOL RESULTS]\n{reasoner_result_str}\n\n"
             f"Please provide the final answer to the user's question based on the information above."
         )
-
+        print(f"\nReasoner 생성 시간: {end_time - start_time:.2f} 초\n")
         # print(f"\n최종 입력:\n{final_user_input}\n")
 
+        start_time = time.time()
         result_output = self.chat_bot.generate(final_user_input, self.history)
-        
+        end_time = time.time()
+        print(f"\nFinal Model 생성 시간: {end_time - start_time:.2f} 초\n")
+
         self.history.append({'role':'user', 'content': user_input})
         self.history.append({'role':'assistant', 'content': result_output})
         
