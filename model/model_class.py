@@ -143,39 +143,38 @@ class Reasoner(LLM):
 
         {tool_str}
 
-        Your output must be exactly ONE JSON object and nothing else:
-
+        Your always response MUST match exactly the following JSON schema:
         {{
-        "thought": "In about 1-3 sentence, state what part of the request is still unresolved (based on history) and why your next action is needed. No final answers."
-        "action": "tool name or 'finish'",
+        "thought": "In 1–3 sentences, state whether you will use a tool or answer directly, and why. No final answer."
+        "action": "<tool name or 'finish'>",
         "action_input": {{ ... }}
         }}
 
         Rules:
 
-        1. Call tools only when needed.
+        1. Task decomposition:
+        - If the user asks about multiple entities, treat each entity independently.
+        - Do NOT infer or expand subtasks. Only handle exactly what the user requested.
+        - Do NOT merge multiple entities into a single search query.
+
+        2. Call tools only when needed.
         - For information tools (e.g., web search): call ONLY if the needed information is NOT already in recent conversation. Do NOT re-search info already known.
         - For action tools (e.g., git, file operations): ALWAYS perform the action when the user requests it, even if similar actions were done before.
         - Evaluate each entity independently.
 
-        2. One tool call per step.
-        - After a tool call, wait for OBSERVATION and decide the next step.
-
         3. "finish" means the final answer generator already has enough information.
 
-        4. Task decomposition:
-        - Decompose only when the user explicitly asks about multiple entities or multiple attributes.
-        - Do NOT infer or expand subtasks. Only handle exactly what the user requested.
-        - Do NOT combine multiple entities into one search query.
-
-        5. Web search rules:
+        4. Web search rules:
         - Queries must be short, keyword-based, and focused.
         - Refine and retry only if OBSERVATION lacks required information.
 
-        6. Language:
-        - Prefer responding in the user's language.
+        5. Language:
+        - "thought" should answer in the user's language.
         - English may be used if it improves clarity or search effectiveness.
         - Do NOT use any other languages (such as Chinese or Japanese).
+
+        6. One tool call per step.
+        - After a tool call, wait for OBSERVATION and decide the next step.
 
         7. "action_input" must ALWAYS be a JSON object (even if empty).
 
@@ -278,22 +277,23 @@ class Agent:
         self.history = []
 
     def run(self, user_input: str):
-        start_time = time.time()
+        Reasoner_start_time = time.time()
         reasoner_result_str = self.reasoner.generate(user_input, self.history)
-        end_time = time.time()
+        Reasoner_end_time = time.time()
+
         print("\n ----------------------------------- reasoner 사용 결과 ----------------------------------- \n\n" ,reasoner_result_str, "\n\n ----------------------------------- reasoner 사용 결과 ----------------------------------- \n")
         final_user_input = (
             f"[USER REQUEST]\n{user_input}\n\n"
             f"[TOOL RESULTS]\n{reasoner_result_str}\n\n"
             f"Please provide the final answer to the user's question based on the information above."
         )
-        print(f"\nReasoner 생성 시간: {end_time - start_time:.2f} 초\n")
         # print(f"\n최종 입력:\n{final_user_input}\n")
 
-        start_time = time.time()
+        final_model_start_time = time.time()
         result_output = self.chat_bot.generate(final_user_input, self.history)
-        end_time = time.time()
-        print(f"\nFinal Model 생성 시간: {end_time - start_time:.2f} 초\n")
+        final_model_end_time = time.time()
+        print(f"\nReasoner 생성 시간: {Reasoner_end_time - Reasoner_start_time:.2f} 초\n")
+        print(f"\nFinal Model 생성 시간: {final_model_end_time - final_model_start_time:.2f} 초\n")
 
         self.history.append({'role':'user', 'content': user_input})
         self.history.append({'role':'assistant', 'content': result_output})
