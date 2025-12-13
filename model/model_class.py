@@ -68,18 +68,18 @@ class ChatBot(LLM):
         # # ---------------------------------------------------
 
     def build_system_prompt(self):
-        return f"""
-        You are the Final Answer Generator.
+        prompt = f"""
+You are the Final Answer Generator.
 
-        Your job:
-        - Provide a natural-language answer using ONLY the given information.
-        - Do NOT call tools, plan actions, or mention internal reasoning.
-        - If information is insufficient, state that clearly rather than guessing.
+Your job:
+- Provide a natural-language answer using ONLY the given information.
+- Do NOT call tools, plan actions, or mention internal reasoning.
+- If information is insufficient, state that clearly rather than guessing.
 
-        Language:
-        - Respond in the same language as the user's request.
-        - Use tool information, but ignore the tool result’s language when choosing your answer language.
-        """
+Language:
+- You must respond in the same language as "[USER REQUEST]".
+"""
+        return textwrap.dedent(prompt).strip()
 
     def generate(self, user_input: str, history: list) -> str:
         messages = history[1:] if history and history[0]['role']=='system' else history[:]
@@ -131,55 +131,60 @@ class Reasoner(LLM):
         self.think_token_id = self.think_token_id[0] if len(self.think_token_id)==1 else -1
         self.remember_turn = remember_turn
         self.tools = total_tools
-        self.system_prompt = self.build_system_prompt()
         
         print(f"Control {model_name=}\n")
 
-    def build_system_prompt(self) -> str:
+    def build_system_prompt(self, user_input) -> str:
         tool_str = '\n'.join([f"- {name}: {tool.description}" for name, tool in self.tools.items()])
         prompt =  f"""
-        You are the controller (Reasoner) of a tool-using agent.
-        You have access to the following tools:
+You are the controller (Reasoner) of a tool-using agent.
+You NEVER answer the user's question directly. You ONLY decide whether to call a tool or finish.
 
-        {tool_str}
+You have access to the following tools:
+{tool_str}
 
-        Your always response MUST match exactly the following JSON schema:
-        {{
-        "thought": "In 1–3 sentences, state whether you will use a tool or answer directly, and why. No final answer."
-        "action": "<tool name or 'finish'>",
-        "action_input": {{ ... }}
-        }}
+Output format (VERY IMPORTANT):
+- You MUST respond with exactly ONE JSON object and NOTHING else.
+- The JSON MUST start with '{{' and end with '}}'.
+- Valid schema:
+{{
+"thought": "In 1–3 sentences, explain whether you need to call a tool or can set 'action' to 'finish', and why.",
+"action": "<tool name or 'finish'>",
+"action_input": {{ parameters. (Use {{}} if there are no arguments.) }}
+}}
 
-        Rules:
+Rules:
 
-        1. Task decomposition:
-        - If the user asks about multiple entities, treat each entity independently.
-        - Do NOT infer or expand subtasks. Only handle exactly what the user requested.
-        - Do NOT merge multiple entities into a single search query.
+1. Task decomposition:
+- Break the user request into each mentioned target (e.g., each person, object, or information item).
+- For each target, independently check whether the required information already exists in the conversation history.
+- Do NOT infer or expand subtasks. Only handle exactly what the user requested.
+- Do NOT merge multiple requested entities into a single search query.
 
-        2. Call tools only when needed.
-        - For information tools (e.g., web search): call ONLY if the needed information is NOT already in recent conversation. Do NOT re-search info already known.
-        - For action tools (e.g., git, file operations): ALWAYS perform the action when the user requests it, even if similar actions were done before.
-        - Evaluate each entity independently.
+2. Call tools only when needed.
+- If part of your request requires a tool, call the tool ONLY for that part.
+- If the request can be answered directly from your own general knowledge without any external information, do NOT call a tool and set "action": "finish".
+- For information tools (e.g., web search): use ONLY if the needed information is NOT already in recent conversation. Do NOT re-search info already known.
+- For action tools (e.g., git, file operations): ALWAYS perform the action when the user requests it, even if similar actions were done before.
 
-        3. "finish" means the final answer generator already has enough information.
+3. "finish" means the final answer generator already has enough information.
 
-        4. Web search rules:
-        - Queries must be short, keyword-based, and focused.
-        - Refine and retry only if OBSERVATION lacks required information.
+4. Web search rules:
+- Queries must be short, keyword-based, and focused.
+- Refine and retry only if OBSERVATION lacks required information.
 
-        5. Language:
-        - "thought" should answer in the user's language.
-        - English may be used if it improves clarity or search effectiveness.
-        - Do NOT use any other languages (such as Chinese or Japanese).
+5. Language:
+- You must respond in the same language as "{user_input}".
+- You may use English only for short technical terms, tool names, or search keywords when necessary.
+- Never use any other language.
 
-        6. One tool call per step.
-        - After a tool call, wait for OBSERVATION and decide the next step.
+6. One tool call per step.
+- After a tool call, wait for OBSERVATION and decide the next step.
 
-        7. "action_input" must ALWAYS be a JSON object (even if empty).
+7. "action_input" must ALWAYS be a JSON object (even if empty).
 
-        Follow these rules strictly.
-        """
+Follow these rules strictly.
+"""
 
         return textwrap.dedent(prompt).strip()
 
@@ -198,7 +203,7 @@ class Reasoner(LLM):
         """
         result = []
         messages = history[1:] if history and history[0]['role']=='system' else history[:]
-        messages = [{'role': 'system', 'content': self.system_prompt}] + messages[max(0, len(messages)-(self.remember_turn*2)):] + [{'role': "user", 'content': f"[Current time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}]\n\n" + user_input}]
+        messages = [{'role': 'system', 'content': self.build_system_prompt(user_input)}] + messages[max(0, len(messages)-(self.remember_turn*2)):] + [{'role': "user", 'content': f"[Current time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}]\n\n" + user_input}]
         observation: Optional[str] = None
 
         for _ in range(max_repeat_num):
@@ -218,7 +223,7 @@ class Reasoner(LLM):
                 eos_token_id=self.tokenizer.eos_token_id,
                 pad_token_id=self.tokenizer.eos_token_id,
                 max_new_tokens=256,
-                temperature=0.2
+                temperature=0.1
             )
             generated_output = outputs[0][len(inputs.input_ids[0]):].tolist()
             try:
@@ -236,7 +241,7 @@ class Reasoner(LLM):
                 observation = None
                 messages+=[{'role': 'assistant', 'content': f"{output_context}"}, {'role': 'user', 'content': f"Invalid format. Respond again with ONLY one JSON object, nothing else."}]
                 continue
-            
+
             messages+=[{'role': "assistant", "content": output_context}]
             
             action = output_dict.get("action")
@@ -250,11 +255,11 @@ class Reasoner(LLM):
             try:
                 tool: tools.Tool = self.tools[action]
                 observation = tool(**action_input)
-                result.append(f"thought={thought} \naction={action} \nOBSERVATION: \n{observation}\n")
+                result.append(f"thought={thought} \naction={action} \nOBSERVATION= \n{observation}\n")
             except TypeError as e:
-                observation = f"\naction={action} \naction_input={action_input} \nOBSERVATION: \n[tool call error] {e}\n\n Please answer again."
+                observation = f"\naction={action} \naction_input={action_input} \nOBSERVATION= \n[tool call error] {e}\n\n Please answer again."
             except Exception as e:
-                observation = f"\naction={action} \naction_input={action_input} \nOBSERVATION: \n[tool call error] {e}\n\n Please answer again."
+                observation = f"\naction={action} \naction_input={action_input} \nOBSERVATION= \n[tool call error] {e}\n\n Please answer again."
             
             print("Reasoner OBSERVATION: \n", observation, "\n")
         print()
@@ -283,8 +288,8 @@ class Agent:
 
         print("\n ----------------------------------- reasoner 사용 결과 ----------------------------------- \n\n" ,reasoner_result_str, "\n\n ----------------------------------- reasoner 사용 결과 ----------------------------------- \n")
         final_user_input = (
-            f"[USER REQUEST]\n{user_input}\n\n"
-            f"[TOOL RESULTS]\n{reasoner_result_str}\n\n"
+            f"[USER REQUEST]: \n{user_input}\n\n"
+            f"[TOOL RESULTS]: \n{reasoner_result_str}\n\n"
             f"Please provide the final answer to the user's question based on the information above."
         )
         # print(f"\n최종 입력:\n{final_user_input}\n")
