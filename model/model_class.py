@@ -67,23 +67,20 @@ class ChatBot(LLM):
         #     print("no hf_device_map attr")
         # # ---------------------------------------------------
 
-    def build_system_prompt(self):
+    def build_system_prompt(self, lang):
         prompt = f"""
 You are the Final Answer Generator.
 
 Your job:
-- Provide a natural-language answer using ONLY the given information.
-- Do NOT call tools, plan actions, or mention internal reasoning.
-- If information is insufficient, state that clearly rather than guessing.
-
-Language:
-- You must respond in the same language as "[USER REQUEST]".
+- You must answer in {lang}.
+- Answer using the provided information.
+- Do NOT add interpretations, assumptions, or extra context.
 """
         return textwrap.dedent(prompt).strip()
 
-    def generate(self, user_input: str, history: list) -> str:
+    def generate(self, user_input: str, lang: str, history: list) -> str:
         messages = history[1:] if history and history[0]['role']=='system' else history[:]
-        messages = [{'role': 'system', 'content': self.build_system_prompt()}] + messages[max(0, len(messages)-(self.remember_turn*2)):] + [{'role': "user", 'content': user_input}]
+        messages = [{'role': 'system', 'content': self.build_system_prompt(lang)}] + messages[max(0, len(messages)-(self.remember_turn*2)):] + [{'role': "user", 'content': user_input}]
         
         # system 있으면 넣어주기
         if history and history[0]['role']=='system' and messages[0]['role']!='system':
@@ -134,54 +131,52 @@ class Reasoner(LLM):
         
         print(f"Control {model_name=}\n")
 
-    def build_system_prompt(self, user_input) -> str:
+    def build_system_prompt(self, lang) -> str:
         tool_str = '\n'.join([f"- {name}: {tool.description}" for name, tool in self.tools.items()])
         prompt =  f"""
 You are the controller (Reasoner) of a tool-using agent.
-You NEVER answer the user's question directly. You ONLY decide whether to call a tool or finish.
+You NEVER answer the user's request. You ONLY decide whether to call a tool or 'finish'.
 
-You have access to the following tools:
+You can use the following tools:
 {tool_str}
 
 Output format (VERY IMPORTANT):
-- You MUST respond with exactly ONE JSON object and NOTHING else.
-- The JSON MUST start with '{{' and end with '}}'.
-- Valid schema:
+- Output MUST be EXACTLY one valid JSON object and nothing else.
+- Do NOT output natural language. Any non-JSON output is invalid.
+
+- Valid JSON schema:
 {{
-"thought": "In 1–3 sentences, explain whether you need to call a tool or can set 'action' to 'finish', and why.",
-"action": "<tool name or 'finish'>",
-"action_input": {{ parameters. (Use {{}} if there are no arguments.) }}
+  "thought": "In 1–3 sentences, explain the reason for tool use or 'finish'.",
+  "action": "<tool name or 'finish'>",
+  "action_input": {{ parameters(dict) }}
 }}
 
 Rules:
 
 1. Task decomposition:
-- Break the user request into each mentioned target (e.g., each person, object, or information item).
-- For each target, independently check whether the required information already exists in the conversation history.
-- Do NOT infer or expand subtasks. Only handle exactly what the user requested.
-- Do NOT merge multiple requested entities into a single search query.
+- Treat each requested entity or information item separately.
+- Do NOT infer or expand beyond what the user explicitly requested.
 
 2. Call tools only when needed.
-- If part of your request requires a tool, call the tool ONLY for that part.
-- If the request can be answered directly from your own general knowledge without any external information, do NOT call a tool and set "action": "finish".
-- For information tools (e.g., web search): use ONLY if the needed information is NOT already in recent conversation. Do NOT re-search info already known.
-- For action tools (e.g., git, file operations): ALWAYS perform the action when the user requests it, even if similar actions were done before.
+- Before calling any tool, first check conversation history or tool observations per entity.
+- Do NOT call tools for entities already answered.
+- NEVER merge multiple entities into a single search query.
+- For information tools (e.g., web search, DB): Do NOT call tools if general knowledge is sufficient. Use tools when the information is time-sensitive, subject to change, or requires precise verification. 
+- For action tools (e.g., git, file operations): ALWAYS use action tools when the user requests it.
 
-3. "finish" means the final answer generator already has enough information.
+3. "finish":
+- Use "finish" when enough information is already available from any source(conversation, tool results, or general knowledge).
 
 4. Web search rules:
 - Queries must be short, keyword-based, and focused.
-- Refine and retry only if OBSERVATION lacks required information.
+- Change query and retry only if OBSERVATION lacks required information.
 
 5. Language:
-- You must respond in the same language as "{user_input}".
-- You may use English only for short technical terms, tool names, or search keywords when necessary.
-- Never use any other language.
+- You must answer in {lang}.
+- English is allowed only for short technical terms, tool names, or search keywords.
+- Do NOT use any other language.
 
 6. One tool call per step.
-- After a tool call, wait for OBSERVATION and decide the next step.
-
-7. "action_input" must ALWAYS be a JSON object (even if empty).
 
 Follow these rules strictly.
 """
@@ -189,7 +184,7 @@ Follow these rules strictly.
         return textwrap.dedent(prompt).strip()
 
 
-    def generate(self, user_input: str, history: list, max_repeat_num: int=5) -> str:  
+    def generate(self, user_input: str, lang: str, history: list, max_repeat_num: int=5) -> str:  
         """
         답변할 수 있는 상태 or 최대 반복 횟수까지 tool 사용.
 
@@ -203,7 +198,7 @@ Follow these rules strictly.
         """
         result = []
         messages = history[1:] if history and history[0]['role']=='system' else history[:]
-        messages = [{'role': 'system', 'content': self.build_system_prompt(user_input)}] + messages[max(0, len(messages)-(self.remember_turn*2)):] + [{'role': "user", 'content': f"[Current time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}]\n\n" + user_input}]
+        messages = [{'role': 'system', 'content': self.build_system_prompt(lang)}] + messages[max(0, len(messages)-(self.remember_turn*2)):] + [{'role': "user", 'content': f"[Current time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}]\n\n" + user_input}]
         observation: Optional[str] = None
 
         for _ in range(max_repeat_num):
@@ -282,20 +277,21 @@ class Agent:
         self.history = []
 
     def run(self, user_input: str):
+        self.lang = detect_language(user_input)
         Reasoner_start_time = time.time()
-        reasoner_result_str = self.reasoner.generate(user_input, self.history)
+        reasoner_result_str = self.reasoner.generate(user_input, self.lang, self.history)
         Reasoner_end_time = time.time()
 
         print("\n ----------------------------------- reasoner 사용 결과 ----------------------------------- \n\n" ,reasoner_result_str, "\n\n ----------------------------------- reasoner 사용 결과 ----------------------------------- \n")
         final_user_input = (
-            f"[USER REQUEST]: \n{user_input}\n\n"
             f"[TOOL RESULTS]: \n{reasoner_result_str}\n\n"
-            f"Please provide the final answer to the user's question based on the information above."
+            f"[USER REQUEST]: {user_input}\n\n"
+            f"Please provide the final answer to the [USER REQUEST]."   #  in the same language as \"{user_input}\"
         )
         # print(f"\n최종 입력:\n{final_user_input}\n")
 
         final_model_start_time = time.time()
-        result_output = self.chat_bot.generate(final_user_input, self.history)
+        result_output = self.chat_bot.generate(final_user_input, self.lang, self.history)
         final_model_end_time = time.time()
         print(f"\nReasoner 생성 시간: {Reasoner_end_time - Reasoner_start_time:.2f} 초\n")
         print(f"\nFinal Model 생성 시간: {final_model_end_time - final_model_start_time:.2f} 초\n")
