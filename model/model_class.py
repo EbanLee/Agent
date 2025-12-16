@@ -72,9 +72,10 @@ class ChatBot(LLM):
 You are the Final Answer Generator.
 
 Your job:
-- You must answer in {lang}.
+- Answer in {lang} by default. but if the user explicitly requests a different language, answer in that language instead.
 - Answer using the provided information.
 - Do NOT add interpretations, assumptions, or extra context.
+- If information is insufficient, state that clearly rather than guessing.
 """
         return textwrap.dedent(prompt).strip()
 
@@ -100,7 +101,7 @@ Your job:
             **inputs.to(DEVICE),
             eos_token_id=self.tokenizer.eos_token_id,
             pad_token_id=self.tokenizer.eos_token_id,
-            max_new_tokens=512,    # 32768
+            max_new_tokens=256,    # 32768
             )
         generated_output = outputs[0][len(inputs.input_ids[0]):].tolist()
         print(f"{len(generated_output)=}\n")
@@ -122,12 +123,12 @@ class Reasoner(LLM):
     """
     답변할 수 있는 상태로 만들어주는 컨트롤러
     """
-    def __init__(self, model_name = model_config["reasoning_model_name"], total_tools: dict[str, tools.Tool] = {}, remember_turn: int=3):
+    def __init__(self, model_name = model_config["reasoning_model_name"], total_tools: Optional[dict[str, tools.Tool]] = None, remember_turn: int=3):
         super().__init__(model_name)
         self.think_token_id = self.tokenizer("</think>").input_ids
         self.think_token_id = self.think_token_id[0] if len(self.think_token_id)==1 else -1
         self.remember_turn = remember_turn
-        self.tools = total_tools
+        self.tools = {} if total_tools==None else total_tools
         
         print(f"Control {model_name=}\n")
 
@@ -135,7 +136,7 @@ class Reasoner(LLM):
         tool_str = '\n'.join([f"- {name}: {tool.description}" for name, tool in self.tools.items()])
         prompt =  f"""
 You are the controller (Reasoner) of a tool-using agent.
-You NEVER answer the user's request. You ONLY decide whether to call a tool or 'finish'.
+You NEVER generate answers to the user's request. You ONLY decide whether to call a tool or 'finish' in JSON format.
 
 You can use the following tools:
 {tool_str}
@@ -144,37 +145,39 @@ Output format (VERY IMPORTANT):
 - Output MUST be EXACTLY one valid JSON object and nothing else.
 - Do NOT output natural language. Any non-JSON output is invalid.
 
-- Valid JSON schema:
+- Valid JSON format:
 {{
-  "thought": "In 1–3 sentences, explain the reason for tool use or 'finish'.",
+  "thought": "In 1–3 sentences, explain the reason for finish or tool use",
   "action": "<tool name or 'finish'>",
-  "action_input": {{ parameters(dict) }}
+  "action_input": {{}}  // parameters go here
 }}
 
 Rules:
 
-1. Task decomposition:
-- Treat each requested entity or information item separately.
-- Do NOT infer or expand beyond what the user explicitly requested.
+1. Language:
+- You must answer in {lang}.
+- Only English is allowed for short technical terms, tool names, or search keywords.
+- Do NOT use any other language.
 
-2. Call tools only when needed.
-- Before calling any tool, first check conversation history or tool observations per entity.
-- Do NOT call tools for entities already answered.
-- NEVER merge multiple entities into a single search query.
-- For information tools (e.g., web search, DB): Do NOT call tools if general knowledge is sufficient. Use tools when the information is time-sensitive, subject to change, or requires precise verification. 
+2. Task decomposition:
+- Treat each requested entity(e.g., people, object, region) separately and keep them independent throughout reasoning.
+- Do NOT create new task types (e.g., comparison, relationship analysis) unless explicitly requested.
+
+3. Call tools only when needed.
+- Before any search, identify which entities already have information.
+- Treat an entity as having information ONLY if confirmed in history or tool observations.
+- Do NOT infer if any requested entity lacks required information.
+- For information tools (e.g., web search, DB): Use tools when the information is time-sensitive, subject to change, or requires precise verification.
 - For action tools (e.g., git, file operations): ALWAYS use action tools when the user requests it.
 
-3. "finish":
-- Use "finish" when enough information is already available from any source(conversation, tool results, or general knowledge).
+4. "finish":
+- Use "finish" ONLY when all requested entities are fully answered.
 
-4. Web search rules:
+5. Web search rules:
+- For searches about a specific entity (person, organization, or object), each web_search query MUST target EXACTLY ONE entity.
+- NEVER copy the full user request as the query for entity lookups.
 - Queries must be short, keyword-based, and focused.
 - Change query and retry only if OBSERVATION lacks required information.
-
-5. Language:
-- You must answer in {lang}.
-- English is allowed only for short technical terms, tool names, or search keywords.
-- Do NOT use any other language.
 
 6. One tool call per step.
 
@@ -184,7 +187,7 @@ Follow these rules strictly.
         return textwrap.dedent(prompt).strip()
 
 
-    def generate(self, user_input: str, lang: str, history: list, max_repeat_num: int=5) -> str:  
+    def generate(self, user_input: str, lang: str, history: list, max_repeat_num: int=5) -> Optional[str]:  
         """
         답변할 수 있는 상태 or 최대 반복 횟수까지 tool 사용.
 
@@ -198,12 +201,12 @@ Follow these rules strictly.
         """
         result = []
         messages = history[1:] if history and history[0]['role']=='system' else history[:]
-        messages = [{'role': 'system', 'content': self.build_system_prompt(lang)}] + messages[max(0, len(messages)-(self.remember_turn*2)):] + [{'role': "user", 'content': f"[Current time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}]\n\n" + user_input}]
+        messages = [{'role': 'system', 'content': self.build_system_prompt(lang)}] + messages[max(0, len(messages)-(self.remember_turn*2)):] + [{'role': "user", 'content': f"[Current time]: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n" + f"{user_input}"}]
         observation: Optional[str] = None
 
         for _ in range(max_repeat_num):
             if observation is not None:
-                messages.append({'role': 'user', 'content': f"OBSERVATION: \n{observation}"})
+                messages.append({'role': 'tool', 'name': action, 'content': observation})
 
             # 자동 템플릿 생성(sos, eos 등)
             text = self.tokenizer.apply_chat_template(
@@ -217,7 +220,7 @@ Follow these rules strictly.
                 **inputs.to(DEVICE),
                 eos_token_id=self.tokenizer.eos_token_id,
                 pad_token_id=self.tokenizer.eos_token_id,
-                max_new_tokens=256,
+                max_new_tokens=128,
                 temperature=0.1
             )
             generated_output = outputs[0][len(inputs.input_ids[0]):].tolist()
@@ -227,17 +230,16 @@ Follow these rules strictly.
                 index = 0
 
             output_context = self.tokenizer.decode(generated_output[index:], skip_special_tokens=True)
-            print(f"\n-----------------------------------------\nReasoner 판단: \n{output_context}\n-----------------------------------------\n")
+            print(f"\n-----------------------------------------\nReasoner 판단: \n{output_context}\n\n{len(generated_output[index:])=}\n-----------------------------------------\n")
 
+            messages+=[{'role': 'assistant', 'content': output_context}]
             try:
                 output_dict = load_json(output_context)
             except json.JSONDecodeError:
                 # JSON형태가 아닐 때 다시요청
                 observation = None
-                messages+=[{'role': 'assistant', 'content': f"{output_context}"}, {'role': 'user', 'content': f"Invalid format. Respond again with ONLY one JSON object, nothing else."}]
+                messages+=[{'role': 'user', 'content': f"Not JSON. Respond again with ONLY one JSON object."}]
                 continue
-
-            messages+=[{'role': "assistant", "content": output_context}]
             
             action = output_dict.get("action")
             if action.strip().lower()=="finish":
@@ -249,26 +251,28 @@ Follow these rules strictly.
             # 도구 사용 성공했을 때 만 result에 저장.
             try:
                 tool: tools.Tool = self.tools[action]
-                observation = tool(**action_input)
-                result.append(f"thought={thought} \naction={action} \nOBSERVATION= \n{observation}\n")
-            except TypeError as e:
-                observation = f"\naction={action} \naction_input={action_input} \nOBSERVATION= \n[tool call error] {e}\n\n Please answer again."
+                observation = tool(**action_input)                
             except Exception as e:
-                observation = f"\naction={action} \naction_input={action_input} \nOBSERVATION= \n[tool call error] {e}\n\n Please answer again."
+                observation = dumps_json({'ok': False, 'error_type': type(e).__name__, "error_message": str(e), "retryable": True})
+                # messages+=[{'role': 'user', 'content': f"action={action} \naction_input={action_input} \n[tool call error] {e}\n\n Please answer again."}]
+                continue
+
+            result.append(f"{observation}")
+            observation = dumps_json({'ok': True, 'results': observation})
             
             print("Reasoner OBSERVATION: \n", observation, "\n")
         print()
         
         if not result:
-            return output_dict["thought"]
+            return None
 
         # result = '\n'.join(result)
 
         return result[-1]
 
 class Agent:
-    def __init__(self, total_tools:dict={}, remember_turn:int=3):
-        self.tools = total_tools
+    def __init__(self, total_tools:Optional[dict]=None, remember_turn:int=3):
+        self.tools = total_tools if total_tools!=None else {}
         self.chat_bot = ChatBot(remember_turn=remember_turn)
         self.chat_bot.model.eval()        
         self.reasoner = Reasoner(total_tools=self.tools, remember_turn=remember_turn)
@@ -283,11 +287,14 @@ class Agent:
         Reasoner_end_time = time.time()
 
         print("\n ----------------------------------- reasoner 사용 결과 ----------------------------------- \n\n" ,reasoner_result_str, "\n\n ----------------------------------- reasoner 사용 결과 ----------------------------------- \n")
-        final_user_input = (
-            f"[TOOL RESULTS]: \n{reasoner_result_str}\n\n"
-            f"[USER REQUEST]: {user_input}\n\n"
-            f"Please provide the final answer to the [USER REQUEST]."   #  in the same language as \"{user_input}\"
-        )
+        if reasoner_result_str != None:
+            final_user_input = (
+                f"[USER REQUEST]\n{user_input}\n\n"
+                f"[TOOL RESULTS]\n{reasoner_result_str}\n\n"
+                f"Provide the final answer to the [USER REQUEST]."   #  in the same language as \"{user_input}\"
+            )
+        else:
+            final_user_input = user_input
         # print(f"\n최종 입력:\n{final_user_input}\n")
 
         final_model_start_time = time.time()

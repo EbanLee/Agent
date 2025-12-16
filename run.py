@@ -32,7 +32,8 @@ torch.cuda.empty_cache()
 with torch.no_grad():
     while True:
         user_input = input("입력: ")
-        if user_input.lower().strip()=="exit":
+        user_input = user_input.lower().strip()
+        if user_input=="exit":
             break
         print(f"\n입력:\n{user_input}\n")
         
