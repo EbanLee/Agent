@@ -257,10 +257,11 @@ Follow these rules strictly.
                 # messages+=[{'role': 'user', 'content': f"action={action} \naction_input={action_input} \n[tool call error] {e}\n\n Please answer again."}]
                 continue
 
+            print("Reasoner OBSERVATION: \n", observation, "\n")
+            
             result.append(f"{observation}")
             observation = dumps_json({'ok': True, 'results': observation})
             
-            print("Reasoner OBSERVATION: \n", observation, "\n")
         print()
         
         if not result:

@@ -39,4 +39,4 @@ class WebSearchTool(Tool):
             # url = item.get("href", "")
             results[i] = f"({i+1}) Title: {title}\n context: {body}\n"
 
-        return "\n\n".join(results)
+        return "\n".join(results)
