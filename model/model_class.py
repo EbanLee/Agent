@@ -28,6 +28,7 @@ class LLM(abc.ABC):
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         self.model = AutoModelForCausalLM.from_pretrained(
             model_name,
+            torch_dtype=torch.float16,
             quantization_config=quant_config,
             device_map=DEVICE,
             # trust_remote_code=True,
@@ -157,27 +158,28 @@ Rules:
 1. Language:
 - You must answer in {lang}.
 - Only English is allowed for short technical terms, tool names, or search keywords.
-- Do NOT use any other language.
+- Never use any language other than {lang} or English.
 
 2. Task decomposition:
 - Treat each requested entity(e.g., people, object, region) separately and keep them independent throughout reasoning.
 - Do NOT create new task types (e.g., comparison, relationship analysis) unless explicitly requested.
 
-3. Call tools only when needed.
+3. Use tools only when required.
+- If the user explicitly requests a search or source lookup, you MUST use the appropriate information tool.
 - Before any search, identify which entities already have information.
-- Treat an entity as having information ONLY if confirmed in history or tool observations.
-- Do NOT infer if any requested entity lacks required information.
-- For information tools (e.g., web search, DB): Use tools when the information is time-sensitive, subject to change, or requires precise verification.
+- If an entity’s required information is confirmed by a tool observation, do not search for that information again.
+- For information tools (e.g., search, DB): Use tools ONLY when the information is time-sensitive, subject to change, or requires precise verification.
 - For action tools (e.g., git, file operations): ALWAYS use action tools when the user requests it.
 
 4. "finish":
+- For definition or explanation requests of well-known, non-time-sensitive concepts (e.g., algorithm, Principles, Theories, etc.), you MUST choose "finish" without using tool.
 - Use "finish" ONLY when all requested entities are fully answered.
 
 5. Web search rules:
 - For searches about a specific entity (person, organization, or object), each web_search query MUST target EXACTLY ONE entity.
 - NEVER copy the full user request as the query for entity lookups.
 - Queries must be short, keyword-based, and focused.
-- Change query and retry only if OBSERVATION lacks required information.
+- Change query and retry if OBSERVATION is missing required information OR is ambiguous/conflicting; do NOT choose "finish" in those cases.
 
 6. One tool call per step.
 
