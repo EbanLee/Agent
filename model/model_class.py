@@ -102,7 +102,7 @@ Your job:
             **inputs.to(DEVICE),
             eos_token_id=self.tokenizer.eos_token_id,
             pad_token_id=self.tokenizer.eos_token_id,
-            max_new_tokens=256,    # 32768
+            max_new_tokens=512,    # 32768
             )
         generated_output = outputs[0][len(inputs.input_ids[0]):].tolist()
         print(f"{len(generated_output)=}\n")
@@ -274,7 +274,7 @@ Follow these rules strictly.
         return result[-1]
 
 class Agent:
-    def __init__(self, total_tools:Optional[dict]=None, remember_turn:int=3):
+    def __init__(self, total_tools:Optional[dict]=None, remember_turn:int=2):
         self.tools = total_tools if total_tools!=None else {}
         self.chat_bot = ChatBot(remember_turn=remember_turn)
         self.chat_bot.model.eval()        
