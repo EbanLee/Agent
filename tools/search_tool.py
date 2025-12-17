@@ -10,7 +10,7 @@ class WebSearchTool(Tool):
         "  - \"query\": the search query string"
         )
 
-    def __call__(self, query: str, max_results: int = 5) -> str:
+    def __call__(self, query: str, max_results: int = 3) -> str:
         """
         질문에 대한 검색 결과를 반환합니다.
 
@@ -36,7 +36,7 @@ class WebSearchTool(Tool):
             title = item.get("title", "")
             title = title.replace("<b>", "").replace("</b>", "")
             body = item.get("body", "")
-            url = item.get("href", "")
-            results[i] = f"[{i+1}] Title: {title}\n context: {body}\n URL: {url}\n"
+            # url = item.get("href", "")
+            results[i] = f"({i+1}) Title: {title}\n context: {body}\n"
 
-        return "\n\n".join(results)
+        return "\n".join(results)
