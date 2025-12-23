@@ -1,0 +1,1618 @@
+[
+  {
+    "id": "q_0001",
+    "question": "읽기 성능이 좋아지는 이유는?",
+    "history": [
+      "MVCC는 DB 동시성 제어 기법이다."
+    ],
+    "search_required": false,
+    "search_type": "context_static",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0002",
+    "question": "휴리스틱이 admissible할 때 얻는 보장은?",
+    "history": [
+      "A*는 휴리스틱 기반 탐색 알고리즘이다."
+    ],
+    "search_required": false,
+    "search_type": "context_static",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0003",
+    "question": "보안상 주의할 점은?",
+    "history": [
+      "JWT는 토큰 기반 인증 방식이다."
+    ],
+    "search_required": false,
+    "search_type": "context_static",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0004",
+    "question": "샤딩을 도입하면 생기는 운영상의 어려움은?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0005",
+    "question": "트랜잭션에서 격리 수준을 높이면 어떤 부작용이 생기나?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0006",
+    "question": "교차 검증이 일반화 성능 추정에 유용한 이유는?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0007",
+    "question": "그래프에서 위상 정렬이 필요한 실제 사례는?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0008",
+    "question": "페이지 폴트가 발생했을 때 OS가 수행하는 단계는?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0009",
+    "question": "드롭아웃이 과적합을 줄이는 직관은?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0010",
+    "question": "로그에 민감정보가 남는 것이 위험한 이유는?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0011",
+    "question": "비밀번호 해시에서 salt가 필요한 이유는?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0012",
+    "question": "Bloom filter가 false positive를 갖는 이유는?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0013",
+    "question": "코사인 유사도를 임베딩 비교에 많이 쓰는 이유는?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0014",
+    "question": "A*에서 휴리스틱이 admissible하면 어떤 보장이 생기나?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0015",
+    "question": "옵티마이저 Adam이 SGD보다 빨리 수렴하는 경우가 있는 이유는?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0016",
+    "question": "분할정복이 캐시 성능에 유리할 때가 있는 이유는?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0017",
+    "question": "데이터 누수(leakage)가 평가를 망치는 전형적인 패턴은?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0018",
+    "question": "self-attention이 RNN 대비 유리한 점은?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0019",
+    "question": "JWT를 쓸 때 토큰 만료 설계를 왜 신경 써야 하나?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0020",
+    "question": "우선순위 큐가 어떤 문제에서 핵심 자료구조가 되나?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0021",
+    "question": "TCP에서 혼잡 제어가 필요한 이유는?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0022",
+    "question": "조인 순서가 쿼리 성능에 큰 영향을 주는 이유는?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0023",
+    "question": "동적 계획법이 성립하려면 어떤 성질이 필요하나?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0024",
+    "question": "MVCC가 읽기 성능을 높이는 방식은?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0025",
+    "question": "정규화(3NF)가 줄이려는 대표적 이상 현상은?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0026",
+    "question": "MITM 공격이 가능한 전형적인 네트워크 조건은?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0027",
+    "question": "락-프리 자료구조가 데드락을 피하는 방식은?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0028",
+    "question": "배치 정규화가 학습을 안정화시키는 이유는?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0029",
+    "question": "LSM-tree가 쓰기 중심 워크로드에 강한 이유는?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0030",
+    "question": "OAuth 2.0에서 access token과 refresh token의 역할 차이는?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0031",
+    "question": "RAG에서 chunking 전략이 중요한 이유는?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0032",
+    "question": "HTTP에서 멱등성이 중요한 이유는?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0033",
+    "question": "Rate limiting이 보안과 안정성에 주는 효과는?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0034",
+    "question": "멀티코어에서 false sharing이 성능을 떨어뜨리는 원리는?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0035",
+    "question": "CORS가 브라우저 보안에서 맡는 역할은?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0036",
+    "question": "DNS 캐시가 트래픽을 줄이는 방식은?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0037",
+    "question": "서킷 브레이커 패턴이 장애 전파를 줄이는 원리는?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0038",
+    "question": "메모리 배리어가 필요한 이유는?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0039",
+    "question": "라벨 스무딩이 과도한 확신을 줄이는 이유는?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0040",
+    "question": "팬텀 리드가 발생하는 전형적인 상황은?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0041",
+    "question": "인덱스가 항상 성능을 올리지는 않는 이유는?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0042",
+    "question": "그래디언트 클리핑이 필요한 상황은?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0043",
+    "question": "다익스트라가 음수 가중치에서 깨지는 이유는?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0044",
+    "question": "권한(authorization)과 인증(authentication)의 차이는?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0045",
+    "question": "리플리케이션에서 일관성 문제가 생기는 이유는?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0046",
+    "question": "캐시 지역성이 성능에 영향을 주는 이유는?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0047",
+    "question": "CSRF가 발생하는 조건은 무엇인가?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0048",
+    "question": "그리디가 최적해를 보장하는 조건을 어떻게 이해하면 되나?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0049",
+    "question": "정렬에서 stable이 중요한 상황은?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0050",
+    "question": "B-tree 인덱스가 범위 조회에 유리한 이유는?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0051",
+    "question": "요즘 분산 시스템에서 서킷 브레이커를 넣는 이유는?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0052",
+    "question": "현재 관점에서 JWT 사용 시 가장 흔한 실수는?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0053",
+    "question": "요즘 대규모 서비스에서 rate limiting을 반드시 거는 이유는?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0054",
+    "question": "최신 하드웨어에서 false sharing이 더 문제가 되는 이유는?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0055",
+    "question": "현재 시스템에서 TCP 혼잡 제어가 중요한 이유는?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0056",
+    "question": "최근에 많이 쓰는 RAG에서 chunk overlap을 두는 이유는?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0057",
+    "question": "최신 브라우저 보안 모델에서 CORS가 필요한 이유는?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0058",
+    "question": "최근 ML 파이프라인에서 데이터 누수를 막기 위한 체크포인트는?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0059",
+    "question": "현재 운영 관점에서 샤딩의 가장 큰 리스크는?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0060",
+    "question": "최근 트렌드인 이벤트 소싱의 단점은 무엇인가?",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0061",
+    "question": "MVCC가 읽기 성능을 높이는 방식은? (짧게)",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0062",
+    "question": "멀티코어에서 false sharing이 성능을 떨어뜨리는 원리는? (짧게)",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0063",
+    "question": "드롭아웃이 과적합을 줄이는 직관은? (짧게)",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0064",
+    "question": "동적 계획법이 성립하려면 어떤 성질이 필요하나? (짧게)",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0065",
+    "question": "self-attention이 RNN 대비 유리한 점은? (짧게)",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0066",
+    "question": "B-tree 인덱스가 범위 조회에 유리한 이유는? (짧게)",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0067",
+    "question": "A*에서 휴리스틱이 admissible하면 어떤 보장이 생기나? (짧게)",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0068",
+    "question": "서킷 브레이커 패턴이 장애 전파를 줄이는 원리는? (짧게)",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0069",
+    "question": "락-프리 자료구조가 데드락을 피하는 방식은? (짧게)",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0070",
+    "question": "팬텀 리드가 발생하는 전형적인 상황은? (짧게)",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0071",
+    "question": "권한(authorization)과 인증(authentication)의 차이는? (짧게)",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0072",
+    "question": "트랜잭션에서 격리 수준을 높이면 어떤 부작용이 생기나? (짧게)",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0073",
+    "question": "그리디가 최적해를 보장하는 조건을 어떻게 이해하면 되나? (짧게)",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0074",
+    "question": "코사인 유사도를 임베딩 비교에 많이 쓰는 이유는? (짧게)",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0075",
+    "question": "OAuth 2.0에서 access token과 refresh token의 역할 차이는? (짧게)",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0076",
+    "question": "교차 검증이 일반화 성능 추정에 유용한 이유는? (짧게)",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0077",
+    "question": "TLS 핸드셰이크에서 서버 인증이 이뤄지는 흐름은? (짧게)",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0078",
+    "question": "샤딩을 도입하면 생기는 운영상의 어려움은? (짧게)",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0079",
+    "question": "다익스트라가 음수 가중치에서 깨지는 이유는? (짧게)",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0080",
+    "question": "Bloom filter가 false positive를 갖는 이유는? (짧게)",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0081",
+    "question": "CSRF가 발생하는 조건은 무엇인가? (짧게)",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0082",
+    "question": "메모리 배리어가 필요한 이유는? (짧게)",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0083",
+    "question": "MITM 공격이 가능한 전형적인 네트워크 조건은? (짧게)",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0084",
+    "question": "라벨 스무딩이 과도한 확신을 줄이는 이유는? (짧게)",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0085",
+    "question": "JWT를 쓸 때 토큰 만료 설계를 왜 신경 써야 하나? (짧게)",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0086",
+    "question": "배치 정규화가 학습을 안정화시키는 이유는? (짧게)",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0087",
+    "question": "XSS 방어에서 출력 인코딩이 핵심인 이유는? (짧게)",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0088",
+    "question": "LSM-tree가 쓰기 중심 워크로드에 강한 이유는? (짧게)",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0089",
+    "question": "데이터 누수(leakage)가 평가를 망치는 전형적인 패턴은? (짧게)",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0090",
+    "question": "조인 순서가 쿼리 성능에 큰 영향을 주는 이유는? (짧게)",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0091",
+    "question": "해시 테이블 평균 탐색이 빠른 이유는? (짧게)",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0092",
+    "question": "그래디언트 클리핑이 필요한 상황은? (짧게)",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0093",
+    "question": "정규화(3NF)가 줄이려는 대표적 이상 현상은? (짧게)",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0094",
+    "question": "그래프에서 위상 정렬이 필요한 실제 사례는? (짧게)",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0095",
+    "question": "페이지 폴트가 발생했을 때 OS가 수행하는 단계는? (짧게)",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0096",
+    "question": "TCP에서 혼잡 제어가 필요한 이유는? (짧게)",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0097",
+    "question": "로그에 민감정보가 남는 것이 위험한 이유는? (짧게)",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0098",
+    "question": "Rate limiting이 보안과 안정성에 주는 효과는? (짧게)",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0099",
+    "question": "HTTP에서 멱등성이 중요한 이유는? (짧게)",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0100",
+    "question": "CORS가 브라우저 보안에서 맡는 역할은? (짧게)",
+    "history": [],
+    "search_required": false,
+    "search_type": "static_knowledge",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0101",
+    "question": "주요 버전 계열은 무엇인가?",
+    "history": [
+      "CUDA는 GPU 연산 생태계에서 널리 쓰인다."
+    ],
+    "search_required": true,
+    "search_type": "context_version",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0102",
+    "question": "소속 팀은 어디인가?",
+    "history": [
+      "손흥민은 유럽 무대에서 활동하는 공격수다."
+    ],
+    "search_required": true,
+    "search_type": "context_entity",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0103",
+    "question": "그 수장은 누구인가?",
+    "history": [
+      "한국의 통화정책은 중앙은행이 결정한다."
+    ],
+    "search_required": true,
+    "search_type": "context_role",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0104",
+    "question": "가격은 어느 정도인가?",
+    "history": [
+      "비트코인은 대표적인 가상자산이다."
+    ],
+    "search_required": true,
+    "search_type": "context_time",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0105",
+    "question": "소속 클럽은 어디인가?",
+    "history": [
+      "김민재는 수비수로 유명하다."
+    ],
+    "search_required": true,
+    "search_type": "context_entity",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0106",
+    "question": "비트코인 가격은 어느 수준인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0107",
+    "question": "국제 유가가 급등/급락한 직접 요인은 무엇으로 요약되나?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0108",
+    "question": "한국은행 총재는 누구인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0109",
+    "question": "PyTorch 버전은 몇이 널리 쓰이나?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0110",
+    "question": "이강인 소속팀은 어디인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0111",
+    "question": "Python 안정 버전은 무엇인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0112",
+    "question": "CUDA 버전 계열은 무엇이 주류인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0113",
+    "question": "엔비디아 CEO는 누구인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0114",
+    "question": "반도체 수출 동향에서 눈에 띄는 변화는 무엇인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0115",
+    "question": "PostgreSQL 메이저 버전은 몇이 주로 운영되나?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0116",
+    "question": "손흥민이 뛰는 클럽은 어디인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0117",
+    "question": "애플 발표회에서 강조한 신기능은 무엇이었나?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0118",
+    "question": "마이크로소프트 CEO는 누구인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0119",
+    "question": "원/달러 환율은 어느 수준인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0120",
+    "question": "한국 개인정보보호법 개정에서 핵심 변경점은 무엇인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0121",
+    "question": "서울 지하철 기본요금은 얼마인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0122",
+    "question": "한국 기준금리는 어느 수준인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0123",
+    "question": "국제 유가(브렌트)는 어느 수준인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0124",
+    "question": "Kubernetes 버전은 어느 라인이 널리 쓰이나?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0125",
+    "question": "한국 실업률은 어느 정도인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0126",
+    "question": "엔비디아 분기 실적에서 큰 변화로 언급된 항목은 무엇인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0127",
+    "question": "EU의 AI 규제안은 어떤 방향으로 정리되고 있나?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0128",
+    "question": "Docker 버전은 어느 쪽이 일반적인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0129",
+    "question": "김민재 소속팀은 어디인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0130",
+    "question": "리오넬 메시 소속팀은 어디인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0131",
+    "question": "Transformers 라이브러리 버전은 어느 쪽이 표준인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0132",
+    "question": "미국 연준 의장은 누구인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0133",
+    "question": "애플 CEO는 누구인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0134",
+    "question": "크리스티아누 호날두 소속팀은 어디인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0135",
+    "question": "한국 출산율은 어느 정도인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0136",
+    "question": "코스피 지수는 어느 수준인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0137",
+    "question": "오타니 쇼헤이가 속한 팀은 어디인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0138",
+    "question": "최근 EU AI 규제안에서 핵심 조항은?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_with_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0139",
+    "question": "Transformers 최신 릴리스는 무엇인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_with_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0140",
+    "question": "Python 최신 안정 버전은 무엇인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_with_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0141",
+    "question": "원/달러 환율(현재)은 어느 수준인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_with_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0142",
+    "question": "국제 유가(브렌트) 최근 가격은 어느 수준인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_with_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0143",
+    "question": "최근 애플 발표회 핵심 요약해줘.",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_with_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0144",
+    "question": "현재 테슬라 CEO는 누구인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_with_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0145",
+    "question": "현재 미국 연준 의장은 누구인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_with_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0146",
+    "question": "최근 엔비디아 실적 발표에서 핵심 포인트는?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_with_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0147",
+    "question": "비트코인 현재 가격은 어느 정도인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_with_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0148",
+    "question": "한국의 최근 출산율 발표 수치는 어느 정도인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_with_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0149",
+    "question": "최근 발표된 한국 실업률은 어느 정도인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_with_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0150",
+    "question": "PyTorch 최신 릴리스는 무엇인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_with_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0151",
+    "question": "현재 애플 CEO는 누구인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_with_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0152",
+    "question": "코스피 지수(현재)는 어느 수준인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_with_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0153",
+    "question": "CUDA 최신 버전은 무엇인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_with_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0154",
+    "question": "OpenAI 최근 업데이트의 핵심은 무엇인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_with_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0155",
+    "question": "서울 지하철 현재 기본요금은 얼마인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_with_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0156",
+    "question": "한국의 현재 기준금리는 얼마인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_with_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0157",
+    "question": "Kubernetes 최신 버전은 무엇인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_with_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0158",
+    "question": "서울 지하철 현재 기본요금은 대략 얼마 수준인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_with_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0159",
+    "question": "오타니 쇼헤이가 속한 팀은 어디로 알려져 있나?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0160",
+    "question": "김민재 소속팀은 어디로 알려져 있나?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0161",
+    "question": "한국 기준금리는 대략 어느 정도인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0162",
+    "question": "현재 테슬라 CEO는 누구로 알려져 있나?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_with_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0163",
+    "question": "현재 애플 CEO는 누구로 알려져 있나?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_with_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0164",
+    "question": "원/달러 환율은 대략 어느 정도인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0165",
+    "question": "한국의 현재 기준금리는 대략 얼마 수준인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_with_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0166",
+    "question": "현재 미국 연준 의장은 누구로 알려져 있나?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_with_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0167",
+    "question": "한국은행 총재는 누구로 알려져 있나?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0168",
+    "question": "엔비디아 CEO는 누구로 알려져 있나?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0169",
+    "question": "한국 최저임금 시급은 대략 얼마 수준인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0170",
+    "question": "테슬라 CEO는 누구로 알려져 있나?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0171",
+    "question": "서울 지하철 기본요금은 대략 얼마 수준인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0172",
+    "question": "크리스티아누 호날두 소속팀은 어디로 알려져 있나?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0173",
+    "question": "구글(알파벳) CEO는 누구로 알려져 있나?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0174",
+    "question": "비트코인 가격은 대략 어느 정도인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0175",
+    "question": "코스피 지수(현재)는 대략 어느 정도인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_with_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0176",
+    "question": "마이크로소프트 CEO는 누구로 알려져 있나?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0177",
+    "question": "EU 집행위원장은 누구로 알려져 있나?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0178",
+    "question": "코스피 지수는 대략 어느 정도인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0179",
+    "question": "이강인 소속팀은 어디로 알려져 있나?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0180",
+    "question": "손흥민이 뛰는 클럽은 어디로 알려져 있나?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0181",
+    "question": "리오넬 메시 소속팀은 어디로 알려져 있나?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0182",
+    "question": "국제 유가(브렌트)는 대략 어느 정도인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0183",
+    "question": "국제 유가(브렌트) 최근 가격은 대략 어느 정도인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_with_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0184",
+    "question": "원/달러 환율(현재)은 대략 어느 정도인가?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_with_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0185",
+    "question": "미국 연준 의장은 누구로 알려져 있나?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0186",
+    "question": "애플 CEO는 누구로 알려져 있나?",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0187",
+    "question": "손흥민이 뛰는 클럽은 어디인가? (추가1)",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0188",
+    "question": "국제 유가가 급등/급락한 직접 요인은 무엇으로 요약되나? (추가2)",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0189",
+    "question": "김민재 소속팀은 어디인가? (추가3)",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0190",
+    "question": "한국 실업률은 어느 정도인가? (추가4)",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0191",
+    "question": "한국 실업률은 어느 정도인가? (추가5)",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0192",
+    "question": "테슬라 CEO는 누구인가? (추가6)",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0193",
+    "question": "손흥민이 뛰는 클럽은 어디인가? (추가7)",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0194",
+    "question": "코스피 지수는 어느 수준인가? (추가8)",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0195",
+    "question": "국제 유가(브렌트)는 어느 수준인가? (추가9)",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0196",
+    "question": "오타니 쇼헤이가 속한 팀은 어디인가? (추가10)",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0197",
+    "question": "한국 개인정보보호법 개정에서 핵심 변경점은 무엇인가? (추가11)",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0198",
+    "question": "엔비디아 분기 실적에서 큰 변화로 언급된 항목은 무엇인가? (추가12)",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0199",
+    "question": "구글(알파벳) CEO는 누구인가? (추가13)",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  },
+  {
+    "id": "q_0200",
+    "question": "코스피 지수는 어느 수준인가? (추가14)",
+    "history": [],
+    "search_required": true,
+    "search_type": "search_required_no_hint",
+    "gold_facts": []
+  }
+]

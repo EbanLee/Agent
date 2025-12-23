@@ -20,15 +20,17 @@ model_config = file_utils.read_yaml(os.path.join(curr_path, "model_config.yaml")
 # print(model_config)
 quant_config = BitsAndBytesConfig(load_in_8bit=True)
 
+
 class LLM(abc.ABC):
     """
     LLM 부모 클래스
     """
+
     def __init__(self, model_name: str, **kwargs):
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         self.model = AutoModelForCausalLM.from_pretrained(
             model_name,
-            torch_dtype=torch.float16,
+            dtype=torch.float16,
             quantization_config=quant_config,
             device_map=DEVICE,
             # trust_remote_code=True,
@@ -40,24 +42,29 @@ class LLM(abc.ABC):
 
     # def input_truncate(self, ):
 
+
 class ChatBot(LLM):
     """
     대화 챗봇 Class
     """
 
-    def __init__(self, model_name = model_config["chat_model_name"], remember_turn: int=2):
+    def __init__(
+        self, model_name=model_config["chat_model_name"], remember_turn: int = 2
+    ):
         """
         챗봇 모델과 토크나이저 설정.
-        <think> 토큰 있으면 이후 답변을 위해 
+        <think> 토큰 있으면 이후 답변을 위해
         """
         super().__init__(model_name)
         # self.history = []
         self.think_token_id = self.tokenizer("</think>").input_ids
-        self.think_token_id = self.think_token_id[0] if len(self.think_token_id)==1 else -1
+        self.think_token_id = (
+            self.think_token_id[0] if len(self.think_token_id) == 1 else -1
+        )
         self.remember_turn = remember_turn
 
         print(f"Chat {model_name=}\n")
-        
+
         # # ---------------------------------------------------
         # print("cuda available:", torch.cuda.is_available())
         # print("model main device:", next(self.model.parameters()).device)
@@ -81,11 +88,21 @@ Your job:
         return textwrap.dedent(prompt).strip()
 
     def generate(self, user_input: str, lang: str, history: list) -> str:
-        messages = history[1:] if history and history[0]['role']=='system' else history[:]
-        messages = [{'role': 'system', 'content': self.build_system_prompt(lang)}] + messages[max(0, len(messages)-(self.remember_turn*2)):] + [{'role': "user", 'content': user_input}]
-        
+        messages = (
+            history[1:] if history and history[0]["role"] == "system" else history[:]
+        )
+        messages = (
+            [{"role": "system", "content": self.build_system_prompt(lang)}]
+            + messages[max(0, len(messages) - (self.remember_turn * 2)) :]
+            + [{"role": "user", "content": user_input}]
+        )
+
         # system 있으면 넣어주기
-        if history and history[0]['role']=='system' and messages[0]['role']!='system':
+        if (
+            history
+            and history[0]["role"] == "system"
+            and messages[0]["role"] != "system"
+        ):
             messages = [history[0]] + messages
 
         # 자동 템플릿 생성(sos, eos 등)
@@ -94,48 +111,65 @@ Your job:
             tokenize=False,
             add_generation_prompt=True,
         )
-        print(f"\n------------------------ 최종 입력 ------------------------\n\n{text}\n\n--------------------------------------------------------------\n")
+        print(
+            f"\n------------------------ 최종 입력 ------------------------\n\n{text}\n\n--------------------------------------------------------------\n"
+        )
 
-        inputs = self.tokenizer(text, return_tensors='pt')
+        inputs = self.tokenizer(text, return_tensors="pt")
         # print(inputs)
         outputs = self.model.generate(
             **inputs.to(DEVICE),
             eos_token_id=self.tokenizer.eos_token_id,
             pad_token_id=self.tokenizer.eos_token_id,
-            max_new_tokens=512,    # 32768
-            )
-        generated_output = outputs[0][len(inputs.input_ids[0]):].tolist()
+            max_new_tokens=512,  # 32768
+        )
+        generated_output = outputs[0][len(inputs.input_ids[0]) :].tolist()
         print(f"{len(generated_output)=}\n")
-        
+
         # decoder는 질문과 답변 모두 뱉으니까 답변에 대한 index 계산
         try:
-            index = len(generated_output) - generated_output[::-1].index(self.think_token_id)
+            index = len(generated_output) - generated_output[::-1].index(
+                self.think_token_id
+            )
         except ValueError:
             index = 0
 
-        output_context = self.tokenizer.decode(generated_output[index:], skip_special_tokens=True)
+        output_context = self.tokenizer.decode(
+            generated_output[index:], skip_special_tokens=True
+        )
 
         # self.history.append({'role': "user", "content": user_input})
         # self.history.append({'role': "assistant", "content": output_context})
 
         return output_context
 
+
 class Reasoner(LLM):
     """
     답변할 수 있는 상태로 만들어주는 컨트롤러
     """
-    def __init__(self, model_name = model_config["reasoning_model_name"], total_tools: Optional[dict[str, tools.Tool]] = None, remember_turn: int=3):
+
+    def __init__(
+        self,
+        model_name=model_config["reasoning_model_name"],
+        total_tools: Optional[dict[str, tools.Tool]] = None,
+        remember_turn: int = 3,
+    ):
         super().__init__(model_name)
         self.think_token_id = self.tokenizer("</think>").input_ids
-        self.think_token_id = self.think_token_id[0] if len(self.think_token_id)==1 else -1
+        self.think_token_id = (
+            self.think_token_id[0] if len(self.think_token_id) == 1 else -1
+        )
         self.remember_turn = remember_turn
-        self.tools = {} if total_tools==None else total_tools
-        
+        self.tools = {} if total_tools == None else total_tools
+
         print(f"Control {model_name=}\n")
 
     def build_system_prompt(self, lang) -> str:
-        tool_str = '\n'.join([f"- {name}: {tool.description}" for name, tool in self.tools.items()])
-        prompt =  f"""
+        tool_str = "\n".join(
+            [f"- {name}: {tool.description}" for name, tool in self.tools.items()]
+        )
+        prompt = f"""
 You are the controller (Reasoner) of a tool-using agent.
 You NEVER generate answers to the user's request. You ONLY decide whether to call a tool or 'finish' in JSON format.
 
@@ -188,8 +222,9 @@ Follow these rules strictly.
 
         return textwrap.dedent(prompt).strip()
 
-
-    def generate(self, user_input: str, lang: str, history: list, max_repeat_num: int=5) -> Optional[str]:  
+    def generate(
+        self, user_input: str, lang: str, history: list, max_repeat_num: int = 5
+    ) -> Optional[str]:
         """
         답변할 수 있는 상태 or 최대 반복 횟수까지 tool 사용.
 
@@ -202,13 +237,27 @@ Follow these rules strictly.
             str: tool사용해서 나온 결과
         """
         result = []
-        messages = history[1:] if history and history[0]['role']=='system' else history[:]
-        messages = [{'role': 'system', 'content': self.build_system_prompt(lang)}] + messages[max(0, len(messages)-(self.remember_turn*2)):] + [{'role': "user", 'content': f"[Current time]: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n" + f"{user_input}"}]
+        messages = (
+            history[1:] if history and history[0]["role"] == "system" else history[:]
+        )
+        messages = (
+            [{"role": "system", "content": self.build_system_prompt(lang)}]
+            + messages[max(0, len(messages) - (self.remember_turn * 2)) :]
+            + [
+                {
+                    "role": "user",
+                    "content": f"[Current time]: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n"
+                    + f"{user_input}",
+                }
+            ]
+        )
         observation: Optional[str] = None
 
         for _ in range(max_repeat_num):
             if observation is not None:
-                messages.append({'role': 'tool', 'name': action, 'content': observation})
+                messages.append(
+                    {"role": "tool", "name": action, "content": observation}
+                )
 
             # 자동 템플릿 생성(sos, eos 등)
             text = self.tokenizer.apply_chat_template(
@@ -217,34 +266,45 @@ Follow these rules strictly.
                 add_generation_prompt=True,
             )
 
-            inputs = self.tokenizer(text, return_tensors='pt')
+            inputs = self.tokenizer(text, return_tensors="pt")
             outputs = self.model.generate(
                 **inputs.to(DEVICE),
                 eos_token_id=self.tokenizer.eos_token_id,
                 pad_token_id=self.tokenizer.eos_token_id,
                 max_new_tokens=128,
-                temperature=0.1
+                temperature=0.1,
             )
-            generated_output = outputs[0][len(inputs.input_ids[0]):].tolist()
+            generated_output = outputs[0][len(inputs.input_ids[0]) :].tolist()
             try:
-                index = len(generated_output) - generated_output[::-1].index(self.think_token_id)
+                index = len(generated_output) - generated_output[::-1].index(
+                    self.think_token_id
+                )
             except ValueError:
                 index = 0
 
-            output_context = self.tokenizer.decode(generated_output[index:], skip_special_tokens=True)
-            print(f"\n-----------------------------------------\nReasoner 판단: \n{output_context}\n\n{len(generated_output[index:])=}\n-----------------------------------------\n")
+            output_context = self.tokenizer.decode(
+                generated_output[index:], skip_special_tokens=True
+            )
+            print(
+                f"\n-----------------------------------------\nReasoner 판단: \n{output_context}\n\n{len(generated_output[index:])=}\n-----------------------------------------\n"
+            )
 
-            messages+=[{'role': 'assistant', 'content': output_context}]
+            messages += [{"role": "assistant", "content": output_context}]
             try:
                 output_dict = load_json(output_context)
             except json.JSONDecodeError:
                 # JSON형태가 아닐 때 다시요청
                 observation = None
-                messages+=[{'role': 'user', 'content': f"Not JSON. Respond again with ONLY one JSON object."}]
+                messages += [
+                    {
+                        "role": "user",
+                        "content": f"Not JSON. Respond again with ONLY one JSON object.",
+                    }
+                ]
                 continue
-            
+
             action = output_dict.get("action")
-            if action.strip().lower()=="finish":
+            if action.strip().lower() == "finish":
                 break
 
             action_input: dict[str, str] = output_dict.get("action_input")
@@ -253,19 +313,26 @@ Follow these rules strictly.
             # 도구 사용 성공했을 때 만 result에 저장.
             try:
                 tool: tools.Tool = self.tools[action]
-                observation = tool(**action_input)                
+                observation = tool(**action_input)
             except Exception as e:
-                observation = dumps_json({'ok': False, 'error_type': type(e).__name__, "error_message": str(e), "retryable": True})
+                observation = dumps_json(
+                    {
+                        "ok": False,
+                        "error_type": type(e).__name__,
+                        "error_message": str(e),
+                        "retryable": True,
+                    }
+                )
                 # messages+=[{'role': 'user', 'content': f"action={action} \naction_input={action_input} \n[tool call error] {e}\n\n Please answer again."}]
                 continue
 
             print("Reasoner OBSERVATION: \n", observation, "\n")
-            
+
             result.append(f"{observation}")
-            observation = dumps_json({'ok': True, 'results': observation})
-            
+            observation = dumps_json({"ok": True, "results": observation})
+
         print()
-        
+
         if not result:
             return None
 
@@ -273,11 +340,12 @@ Follow these rules strictly.
 
         return result[-1]
 
+
 class Agent:
-    def __init__(self, total_tools:Optional[dict]=None, remember_turn:int=2):
-        self.tools = total_tools if total_tools!=None else {}
+    def __init__(self, total_tools: Optional[dict] = None, remember_turn: int = 2):
+        self.tools = total_tools if total_tools != None else {}
         self.chat_bot = ChatBot(remember_turn=remember_turn)
-        self.chat_bot.model.eval()        
+        self.chat_bot.model.eval()
         self.reasoner = Reasoner(total_tools=self.tools, remember_turn=remember_turn)
         self.reasoner.model.eval()
 
@@ -286,28 +354,39 @@ class Agent:
     def run(self, user_input: str):
         self.lang = detect_language(user_input)
         Reasoner_start_time = time.time()
-        reasoner_result_str = self.reasoner.generate(user_input, self.lang, self.history)
+        reasoner_result_str = self.reasoner.generate(
+            user_input, self.lang, self.history
+        )
         Reasoner_end_time = time.time()
 
-        print("\n ----------------------------------- reasoner 사용 결과 ----------------------------------- \n\n" ,reasoner_result_str, "\n\n ----------------------------------- reasoner 사용 결과 ----------------------------------- \n")
+        print(
+            "\n ----------------------------------- reasoner 사용 결과 ----------------------------------- \n\n",
+            reasoner_result_str,
+            "\n\n ----------------------------------- reasoner 사용 결과 ----------------------------------- \n",
+        )
         if reasoner_result_str != None:
             final_user_input = (
                 f"[USER REQUEST]\n{user_input}\n\n"
                 f"[TOOL RESULTS]\n{reasoner_result_str}\n\n"
-                f"Provide the final answer to the [USER REQUEST]."   #  in the same language as \"{user_input}\"
+                f"Provide the final answer to the [USER REQUEST]."  #  in the same language as \"{user_input}\"
             )
         else:
             final_user_input = user_input
         # print(f"\n최종 입력:\n{final_user_input}\n")
 
         final_model_start_time = time.time()
-        result_output = self.chat_bot.generate(final_user_input, self.lang, self.history)
+        result_output = self.chat_bot.generate(
+            final_user_input, self.lang, self.history
+        )
         final_model_end_time = time.time()
-        print(f"\nReasoner 생성 시간: {Reasoner_end_time - Reasoner_start_time:.2f} 초\n")
-        print(f"\nFinal Model 생성 시간: {final_model_end_time - final_model_start_time:.2f} 초\n")
+        print(
+            f"\nReasoner 생성 시간: {Reasoner_end_time - Reasoner_start_time:.2f} 초\n"
+        )
+        print(
+            f"\nFinal Model 생성 시간: {final_model_end_time - final_model_start_time:.2f} 초\n"
+        )
 
-        self.history.append({'role':'user', 'content': user_input})
-        self.history.append({'role':'assistant', 'content': result_output})
-        
+        self.history.append({"role": "user", "content": user_input})
+        self.history.append({"role": "assistant", "content": result_output})
 
         return result_output

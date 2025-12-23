@@ -2,13 +2,14 @@ from ddgs import DDGS
 
 from tools import Tool
 
+
 class WebSearchTool(Tool):
     name = "web_search"
     description = (
         "- Use this tool to search the web."
         "- Parameters:"
-        "  - \"query\": the search query string"
-        )
+        '  - "query": the search query string'
+    )
 
     def __call__(self, query: str, max_results: int = 3) -> str:
         """
@@ -28,10 +29,10 @@ class WebSearchTool(Tool):
                 results = list(ddgs.text(query, max_results=max_results))
         except Exception as e:
             return f"[Web search error] Error occurred during search: {e}"
-        
+
         if not results:
             return f"[Web search] No results found for query: '{query}'"
-        
+
         for i, item in enumerate(results):
             title = item.get("title", "")
             title = title.replace("<b>", "").replace("</b>", "")
